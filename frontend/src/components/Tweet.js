@@ -1,36 +1,27 @@
-import React, {useEffect, useState} from 'react';
-// import {Link} from 'react-router-dom';
+import React from 'react';
+import useFetch from '../hooks/useFetch';
 
 function Tweet() {
-    useEffect( () => {
-        fetchItems();
-    }, []);
+    const { data: items, loading, error } = useFetch('/tweets');
 
-    const [items, setItems] = useState([]);
+    if (loading) return <p>Loading tweets...</p>;
+    if (error) return <p>Error loading tweets: {error}</p>;
 
-    const fetchItems = async () => {
-        const data = await fetch('/tweets');
-        const items = await data.json();
-        setItems(items);
-    };
-
-    return(
+    return (
         <section>
-            {
-            items.map(item => (
-                <div class="container-fluid p-3 w-50">
-                    <div class="card-deck">
-                        <div class="card">
-                            <div class="card-body p-1">
-                                <h6 class="card-title">{item.name}</h6>
-                                <p class="card-text">{item.msg}</p>
-                                <p class="card-text"><i>by {item.username}</i></p>
+            {items.map((item, index) => (
+                <div key={index} className="container-fluid p-3 w-50">
+                    <div className="card-deck">
+                        <div className="card">
+                            <div className="card-body p-1">
+                                <h6 className="card-title">{item.name}</h6>
+                                <p className="card-text">{item.msg}</p>
+                                <p className="card-text"><i>by {item.username}</i></p>
                             </div>
                         </div>
                     </div>
                 </div>
-            ))
-            }
+            ))}
         </section>
     );
 }

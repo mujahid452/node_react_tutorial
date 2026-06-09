@@ -1,25 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const tweets = require('../data/tweets');
 
 router.get('/tweets', (req, res) => {
-    const str = [
-        {
-            "name": "Codr Kai",
-            "msg": "This is my first tweet!",
-            "username": "codrkai"
-        },
-        {
-            "name": "Samantha Kai",
-            "msg": "React JS is so simple!",
-            "username": "samanthakai"
-        },
-        {
-            "name": "John K",
-            "msg": "Sweep the leg!",
-            "username": "johnk"
-        }
-    ];
-    res.end(JSON.stringify(str));
+    res.json(tweets);
 });
 
 router.post('/addTweet', (req, res) => {

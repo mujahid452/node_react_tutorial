@@ -1,13 +1,12 @@
 import React from 'react';
+import PageSection from './shared/PageSection';
 
 function Home() {
-    return(
-        <section>
-            <div class="container-fluid">
-                <h1 class="mt-5">Welcome</h1>
-                <p>This site was created using Node JS and React.</p>
-            </div>
-        </section>
+    return (
+        <PageSection>
+            <h1 className="mt-5">Welcome</h1>
+            <p>This site was created using Node JS and React.</p>
+        </PageSection>
     );
 }
 
