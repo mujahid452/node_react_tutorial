@@ -23,7 +23,17 @@ router.get('/tweets', (req, res) => {
 });
 
 router.post('/addTweet', (req, res) => {
-    res.end('NA');
+    const { name, msg, username } = req.body;
+    if (!name || !msg || !username) {
+        return res.status(400).json({ error: 'name, msg, and username are required' });
+    }
+    if (typeof name !== 'string' || typeof msg !== 'string' || typeof username !== 'string') {
+        return res.status(400).json({ error: 'name, msg, and username must be strings' });
+    }
+    if (name.length > 100 || msg.length > 280 || username.length > 50) {
+        return res.status(400).json({ error: 'Field length exceeds maximum allowed' });
+    }
+    res.status(501).json({ error: 'Not implemented' });
 });
 
 module.exports = router;
