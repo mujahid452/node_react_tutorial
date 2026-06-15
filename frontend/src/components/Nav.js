@@ -11,6 +11,7 @@ function Nav() {
                 <div class="navbar-nav ml-auto">
                     <Link to='/' className="nav-item nav-link active">Home</Link>
                     <Link to='/tweets' className="nav-item nav-link">Tweets</Link>
+                    <Link to='/menue' className="nav-item nav-link">Menu</Link>
                 </div>
             </div>
         </nav>
