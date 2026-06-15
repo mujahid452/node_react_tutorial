@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 function Menue() {
+    useEffect( () => {
+        fetchItems();
+    }, []);
+
     const [items, setItems] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -9,18 +13,10 @@ function Menue() {
     const [editId, setEditId] = useState(null);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        fetchItems();
-    }, []);
-
     const fetchItems = async () => {
-        try {
-            const response = await fetch('/menue');
-            const data = await response.json();
-            setItems(data);
-        } catch (err) {
-            setError('Failed to fetch menu items');
-        }
+        const data = await fetch('/menue');
+        const items = await data.json();
+        setItems(items);
     };
 
     const resetForm = () => {
@@ -36,29 +32,31 @@ function Menue() {
         e.preventDefault();
         setError('');
 
-        const itemData = { name, description, price: Number(price), category };
+        const itemData = {name, description, price: Number(price), category};
 
-        try {
-            if (editId) {
-                const response = await fetch(`/menue/${editId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(itemData)
-                });
-                if (!response.ok) throw new Error('Failed to update item');
-            } else {
-                const response = await fetch('/menue', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(itemData)
-                });
-                if (!response.ok) throw new Error('Failed to create item');
+        if (editId) {
+            const response = await fetch(`/menue/${editId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(itemData)
+            });
+            if (!response.ok) {
+                setError('Failed to update item');
+                return;
             }
-            resetForm();
-            fetchItems();
-        } catch (err) {
-            setError(err.message);
+        } else {
+            const response = await fetch('/menue', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(itemData)
+            });
+            if (!response.ok) {
+                setError('Failed to create item');
+                return;
+            }
         }
+        resetForm();
+        fetchItems();
     };
 
     const handleEdit = (item) => {
@@ -71,52 +69,51 @@ function Menue() {
 
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this item?')) return;
-        try {
-            const response = await fetch(`/menue/${id}`, { method: 'DELETE' });
-            if (!response.ok) throw new Error('Failed to delete item');
-            fetchItems();
-        } catch (err) {
-            setError(err.message);
+        const response = await fetch(`/menue/${id}`, {method: 'DELETE'});
+        if (!response.ok) {
+            setError('Failed to delete item');
+            return;
         }
+        fetchItems();
     };
 
-    return (
+    return(
         <section>
-            <div className="container-fluid mt-4">
-                <h2 className="mb-4">Menu Items</h2>
+            <div class="container-fluid mt-4">
+                <h2 class="mb-4">Menu Items</h2>
 
-                {error && <div className="alert alert-danger">{error}</div>}
+                {error && <div class="alert alert-danger">{error}</div>}
 
-                <div className="card mb-4">
-                    <div className="card-body">
-                        <h5 className="card-title">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
                             {editId ? 'Edit Menu Item' : 'Add Menu Item'}
                         </h5>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-group mb-2">
+                            <div class="form-group mb-2">
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    class="form-control"
                                     placeholder="Name"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                 />
                             </div>
-                            <div className="form-group mb-2">
+                            <div class="form-group mb-2">
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    class="form-control"
                                     placeholder="Description"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     required
                                 />
                             </div>
-                            <div className="form-group mb-2">
+                            <div class="form-group mb-2">
                                 <input
                                     type="number"
-                                    className="form-control"
+                                    class="form-control"
                                     placeholder="Price"
                                     value={price}
                                     onChange={(e) => setPrice(e.target.value)}
@@ -125,23 +122,23 @@ function Menue() {
                                     step="0.01"
                                 />
                             </div>
-                            <div className="form-group mb-2">
+                            <div class="form-group mb-2">
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    class="form-control"
                                     placeholder="Category"
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
                                     required
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary mr-2">
+                            <button type="submit" class="btn btn-primary mr-2">
                                 {editId ? 'Update' : 'Add'}
                             </button>
                             {editId && (
                                 <button
                                     type="button"
-                                    className="btn btn-secondary ml-2"
+                                    class="btn btn-secondary ml-2"
                                     onClick={resetForm}
                                 >
                                     Cancel
@@ -154,27 +151,27 @@ function Menue() {
                 {items.length === 0 ? (
                     <p>No menu items found. Add one above!</p>
                 ) : (
-                    <div className="row">
-                        {items.map((item) => (
-                            <div key={item.id} className="col-md-4 mb-3">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <h5 className="card-title">{item.name}</h5>
-                                        <h6 className="card-subtitle mb-2 text-muted">
+                    <div class="row">
+                        {items.map(item => (
+                            <div key={item.id} class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{item.name}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">
                                             {item.category}
                                         </h6>
-                                        <p className="card-text">{item.description}</p>
-                                        <p className="card-text">
+                                        <p class="card-text">{item.description}</p>
+                                        <p class="card-text">
                                             <strong>${Number(item.price).toFixed(2)}</strong>
                                         </p>
                                         <button
-                                            className="btn btn-sm btn-warning mr-2"
+                                            class="btn btn-sm btn-warning mr-2"
                                             onClick={() => handleEdit(item)}
                                         >
                                             Edit
                                         </button>
                                         <button
-                                            className="btn btn-sm btn-danger ml-2"
+                                            class="btn btn-sm btn-danger ml-2"
                                             onClick={() => handleDelete(item.id)}
                                         >
                                             Delete
