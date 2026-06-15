@@ -62,7 +62,7 @@ function Menue() {
     };
 
     const handleEdit = (item) => {
-        setEditId(item._id);
+        setEditId(item.id);
         setName(item.name);
         setDescription(item.description);
         setPrice(item.price.toString());
@@ -156,7 +156,7 @@ function Menue() {
                 ) : (
                     <div className="row">
                         {items.map((item) => (
-                            <div key={item._id} className="col-md-4 mb-3">
+                            <div key={item.id} className="col-md-4 mb-3">
                                 <div className="card">
                                     <div className="card-body">
                                         <h5 className="card-title">{item.name}</h5>
@@ -165,7 +165,7 @@ function Menue() {
                                         </h6>
                                         <p className="card-text">{item.description}</p>
                                         <p className="card-text">
-                                            <strong>${item.price.toFixed(2)}</strong>
+                                            <strong>${Number(item.price).toFixed(2)}</strong>
                                         </p>
                                         <button
                                             className="btn btn-sm btn-warning mr-2"
@@ -175,7 +175,7 @@ function Menue() {
                                         </button>
                                         <button
                                             className="btn btn-sm btn-danger ml-2"
-                                            onClick={() => handleDelete(item._id)}
+                                            onClick={() => handleDelete(item.id)}
                                         >
                                             Delete
                                         </button>

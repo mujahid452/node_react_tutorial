@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Menue = require('../models/Menue');
+const pool = require('../db');
 
 router.get('/tweets', (req, res) => {
     const str = [
@@ -32,8 +32,8 @@ router.post('/addTweet', (req, res) => {
 // GET all menu items
 router.get('/menue', async (req, res) => {
     try {
-        const items = await Menue.find();
-        res.json(items);
+        const result = await pool.query('SELECT * FROM menue ORDER BY created_at DESC');
+        res.json(result.rows);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -42,9 +42,9 @@ router.get('/menue', async (req, res) => {
 // GET single menu item
 router.get('/menue/:id', async (req, res) => {
     try {
-        const item = await Menue.findById(req.params.id);
-        if (!item) return res.status(404).json({ message: 'Menu item not found' });
-        res.json(item);
+        const result = await pool.query('SELECT * FROM menue WHERE id = $1', [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Menu item not found' });
+        res.json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -52,15 +52,13 @@ router.get('/menue/:id', async (req, res) => {
 
 // CREATE a menu item
 router.post('/menue', async (req, res) => {
-    const item = new Menue({
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        category: req.body.category
-    });
+    const { name, description, price, category } = req.body;
     try {
-        const newItem = await item.save();
-        res.status(201).json(newItem);
+        const result = await pool.query(
+            'INSERT INTO menue (name, description, price, category) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, description, price, category]
+        );
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
@@ -68,17 +66,14 @@ router.post('/menue', async (req, res) => {
 
 // UPDATE a menu item
 router.put('/menue/:id', async (req, res) => {
+    const { name, description, price, category } = req.body;
     try {
-        const item = await Menue.findById(req.params.id);
-        if (!item) return res.status(404).json({ message: 'Menu item not found' });
-
-        if (req.body.name != null) item.name = req.body.name;
-        if (req.body.description != null) item.description = req.body.description;
-        if (req.body.price != null) item.price = req.body.price;
-        if (req.body.category != null) item.category = req.body.category;
-
-        const updatedItem = await item.save();
-        res.json(updatedItem);
+        const result = await pool.query(
+            'UPDATE menue SET name = COALESCE($1, name), description = COALESCE($2, description), price = COALESCE($3, price), category = COALESCE($4, category), updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *',
+            [name, description, price, category, req.params.id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Menu item not found' });
+        res.json(result.rows[0]);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
@@ -87,9 +82,8 @@ router.put('/menue/:id', async (req, res) => {
 // DELETE a menu item
 router.delete('/menue/:id', async (req, res) => {
     try {
-        const item = await Menue.findById(req.params.id);
-        if (!item) return res.status(404).json({ message: 'Menu item not found' });
-        await item.remove();
+        const result = await pool.query('DELETE FROM menue WHERE id = $1 RETURNING *', [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({ message: 'Menu item not found' });
         res.json({ message: 'Menu item deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
