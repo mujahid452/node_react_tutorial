@@ -11,6 +11,9 @@ function Configurations() {
                     <Link to='/menue' class="list-group-item list-group-item-action">
                         Menu Management
                     </Link>
+                    <Link to='/items' class="list-group-item list-group-item-action">
+                        Items Management
+                    </Link>
                 </div>
             </div>
         </section>
