@@ -12,6 +12,7 @@ function Nav() {
                     <Link to='/' className="nav-item nav-link active">Home</Link>
                     <Link to='/tweets' className="nav-item nav-link">Tweets</Link>
                     <Link to='/menue' className="nav-item nav-link">Menu</Link>
+                    <Link to='/configurations' className="nav-item nav-link">Configurations</Link>
                 </div>
             </div>
         </nav>
